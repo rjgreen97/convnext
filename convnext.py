@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class InvertedBottleneck(nn.Module):
-    def __init__(self, channels, skip_connection=None, hidden_layer_multiplier=4):
+    def __init__(self, channels, skip_connection=None):
         super(InvertedBottleneck, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(
@@ -18,7 +18,7 @@ class InvertedBottleneck(nn.Module):
         self.conv2 = nn.Sequential(
             nn.Conv2d(
                 in_channels=channels,
-                out_channels=channels * hidden_layer_multiplier,
+                out_channels=channels * 4,
                 kernel_size=1,
                 stride=1,
                 padding=0,
@@ -26,7 +26,7 @@ class InvertedBottleneck(nn.Module):
             nn.GELU(),
         )
         self.conv3 = nn.Conv2d(
-            in_channels=channels * hidden_layer_multiplier,
+            in_channels=channels * 4,
             out_channels=channels,
             kernel_size=1,
             stride=1,
@@ -46,11 +46,22 @@ class InvertedBottleneck(nn.Module):
 
 
 class ResNeXt(nn.Module):
-    def __init__(self):
+    def __init__(self, block, layer_list, num_classes=10):
         super(ResNeXt, self).__init__()
+        self.patchify = nn.Conv2d(
+            in_channels=3, out_channels=96, kernel_size=4, stride=4, padding=0
+        )
 
     def _make_layer(self):
         pass
 
     def forward(self, x):
-        pass
+        batch_size = x.shape[0]
+
+        x = self.patchify(x)
+
+
+if __name__ == "__main__":
+    model = ResNeXt(InvertedBottleneck, [3, 3, 9, 3])
+    # x = torch.tensor(, 3, , ,)
+    # model.forward(x)
