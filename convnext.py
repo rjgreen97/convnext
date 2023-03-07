@@ -4,7 +4,7 @@ from timm.models.layers import DropPath
 
 
 class InvertedBottleneck(nn.Module):
-    def __init__(self, channels, drop_path=0):
+    def __init__(self, channels, skip_connection=None):
         super(InvertedBottleneck, self).__init__()
         self.block = nn.Sequential(
             nn.Conv2d(
@@ -32,12 +32,13 @@ class InvertedBottleneck(nn.Module):
                 padding=0,
             ),
         )
-        self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
+        self.skip_connection = skip_connection
 
     def forward(self, x):
         residual = x
         x = self.block(x)
-        x = residual + self.drop_path(x)
+        if self.skip_connection:
+            residual = self.skip_connection(residual)
         return x
 
 
@@ -65,30 +66,6 @@ class ResNeXt(nn.Module):
         #   nn.GroupNorm(num_groups=1, num_channels=channels),
         #     nn.Linear(in_features=, out_features=num_classes)
         # )
-
-    # method to create new layer of blocks, where each block has skip connection and once the number of blocks is reached, the number of feature maps is doubled
-    def _make_layer(self, block, num_blocks, feature_maps):
-        layers = []
-
-        skip_connection = nn.Sequential(
-            nn.Conv2d(
-                in_channels=self.in_feature_maps,
-                out_channels=feature_maps,
-                kernel_size=2,
-                stride=2,
-                padding=0,
-            ),
-            # nn.GroupNorm(num_groups=1, num_channels=feature_maps),
-        )
-
-        layers.append(
-            block(channels=self.in_feature_maps, skip_connection=skip_connection)
-        )
-
-        self.in_feature_maps = feature_maps
-        for i in range(1, num_blocks):
-            layers.append(block(channels=self.in_feature_maps))
-        return nn.Sequential(*layers)
 
     def forward(self, x):
         batch_size = x.shape[0]
