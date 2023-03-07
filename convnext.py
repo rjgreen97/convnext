@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from timm.models.layers import DropPath
 
 
 class InvertedBottleneck(nn.Module):
@@ -42,30 +41,50 @@ class InvertedBottleneck(nn.Module):
         return x
 
 
-class ResNeXt(nn.Module):
-    def __init__(self, block, depth, num_classes=10):
-        super(ResNeXt, self).__init__()
-        self.in_feature_maps = 96
+class ConvNeXt(nn.Module):
+    def __init__(
+        self, channels=[96, 192, 384, 768], layer_depths=[3, 3, 9, 3], num_classes=10
+    ):
+        super(ConvNeXt, self).__init__()
         self.patchify = nn.Conv2d(
-            in_channels=3, out_channels=96, kernel_size=4, stride=4, padding=0
+            in_channels=3,
+            out_channels=channels[0],
+            kernel_size=4,
+            stride=4,
+            padding=0,
         )
         self.layer1 = self._make_layer(
-            block=block, num_blocks=depth[0], feature_maps=96
+            channels=channels[0], layer_depth=layer_depths[0]
         )
         self.layer2 = self._make_layer(
-            block=block, num_blocks=depth[1], feature_maps=192
+            channels=channels[1], layer_depth=layer_depths[1]
         )
         self.layer3 = self._make_layer(
-            block=block, num_blocks=depth[2], feature_maps=384
+            channels=channels[2], layer_depth=layer_depths[2]
         )
         self.layer4 = self._make_layer(
-            block=block, num_blocks=depth[3], feature_maps=768
+            channels=channels[3], layer_depth=layer_depths[3]
         )
-        # self.classification_head = nn.Sequential(
-        #     nn.AdaptiveAvgPool2d(1),
-        #   nn.GroupNorm(num_groups=1, num_channels=channels),
-        #     nn.Linear(in_features=, out_features=num_classes)
-        # )
+        self.classification_head = nn.Sequential(
+            nn.AdaptiveAvgPool2d((1, 1)),
+            nn.LayerNorm(normalized_shape=channels[3]),
+            nn.Linear(channels[3], num_classes),
+        )
+
+    # method that creates a layer of inverted bottleneck blocks with skip connections and downsampling once layer depth is reached
+    def _make_layer(self, channels, layer_depth):
+        layers = []
+        for i in range(layer_depth):
+            if i == 0:
+                layers.append(
+                    InvertedBottleneck(
+                        channels=channels,
+                        skip_connection=nn.Conv2d(channels, channels, 1, 2),
+                    )
+                )
+            else:
+                layers.append(InvertedBottleneck(channels=channels))
+        return nn.Sequential(*layers)
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -73,12 +92,8 @@ class ResNeXt(nn.Module):
         assert x.shape == (batch_size, 3, 256, 256)
         x = self.patchify(x)
         assert x.shape == (batch_size, 96, 64, 64)
-        x = self.layer1(x)
-        print("\n=========================")
-        print(f"x.shape: {x.shape}")
-        print("=========================")
+        # x = self.layer1(x)
         # x = self.layer2(x)
-
         # x = self.layer3(x)
         # x = self.layer4(x)
         # x = self.classification_head(x)
@@ -86,6 +101,6 @@ class ResNeXt(nn.Module):
 
 
 if __name__ == "__main__":
-    model = ResNeXt(block=InvertedBottleneck, depth=[3, 3, 9, 3])
+    model = ConvNeXt()
     x = torch.FloatTensor(4096, 3, 256, 256)
     model.forward(x)
