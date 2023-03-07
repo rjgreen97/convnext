@@ -3,7 +3,8 @@ import torch.nn as nn
 
 
 class InvertedBottleneck(nn.Module):
-    def __init__(self, channels, skip_connection=None):
+    # def __init__(self, channels, skip_connection=None):
+    def __init__(self, channels):
         super(InvertedBottleneck, self).__init__()
         self.block = nn.Sequential(
             nn.Conv2d(
@@ -31,13 +32,13 @@ class InvertedBottleneck(nn.Module):
                 padding=0,
             ),
         )
-        self.skip_connection = skip_connection
+        # self.skip_connection = skip_connection
 
     def forward(self, x):
         residual = x
         x = self.block(x)
-        if self.skip_connection:
-            residual = self.skip_connection(residual)
+        # if self.skip_connection:
+        #     residual = self.skip_connection(residual)
         x += residual
         return x
 
