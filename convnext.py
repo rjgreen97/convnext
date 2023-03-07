@@ -89,6 +89,7 @@ class ConvNeXt(nn.Module):
         )
         self.head = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
+            nn.Flatten(start_dim=1),
             nn.GroupNorm(num_groups=1, num_channels=channels[3]),
             nn.Linear(channels[3], num_classes),
         )
@@ -119,9 +120,9 @@ class ConvNeXt(nn.Module):
         assert x.shape == (batch_size, 768, 8, 8)
         x = self.layer4(x)
         assert x.shape == (batch_size, 768, 8, 8)
-        x = torch.flatten(x, start_dim=1)
         x = self.head(x)
-        # return x
+        assert x.shape == (batch_size, 10)
+        return x
 
 
 if __name__ == "__main__":
