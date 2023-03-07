@@ -1,3 +1,3 @@
-ConvNeXt implimentaion written from scratch using PyTorch.
+ConvNeXt implimentaion written from scratch with PyTorch.
 
 https://arxiv.org/pdf/2201.03545.pdf

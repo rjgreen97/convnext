@@ -57,34 +57,19 @@ class ConvNeXt(nn.Module):
             ),
             nn.GroupNorm(num_groups=1, num_channels=channels[0]),
         )
-        self.layer1 = self._make_layer(
+        self.layer1 = self._make_conv_layer(
             channels=channels[0], layer_depth=layer_depths[0]
         )
-        self.downsample1 = nn.Sequential(
-            nn.Sequential(
-                nn.GroupNorm(num_groups=1, num_channels=channels[0]),
-                nn.Conv2d(channels[0], channels[1], kernel_size=2, stride=2),
-            )
-        )
-        self.layer2 = self._make_layer(
+        self.downsample1 = self._make_downsample_layer(channels=channels[0])
+        self.layer2 = self._make_conv_layer(
             channels=channels[1], layer_depth=layer_depths[1]
         )
-        self.downsample2 = nn.Sequential(
-            nn.Sequential(
-                nn.GroupNorm(num_groups=1, num_channels=channels[1]),
-                nn.Conv2d(channels[1], channels[2], kernel_size=2, stride=2),
-            )
-        )
-        self.layer3 = self._make_layer(
+        self.downsample2 = self._make_downsample_layer(channels=channels[1])
+        self.layer3 = self._make_conv_layer(
             channels=channels[2], layer_depth=layer_depths[2]
         )
-        self.downsample3 = nn.Sequential(
-            nn.Sequential(
-                nn.GroupNorm(num_groups=1, num_channels=channels[2]),
-                nn.Conv2d(channels[2], channels[3], kernel_size=2, stride=2),
-            )
-        )
-        self.layer4 = self._make_layer(
+        self.downsample3 = self._make_downsample_layer(channels=channels[2])
+        self.layer4 = self._make_conv_layer(
             channels=channels[3], layer_depth=layer_depths[3]
         )
         self.head = nn.Sequential(
@@ -94,11 +79,17 @@ class ConvNeXt(nn.Module):
             nn.Linear(channels[3], num_classes),
         )
 
-    def _make_layer(self, channels, layer_depth):
+    def _make_conv_layer(self, channels, layer_depth):
         layers = []
-        for i in range(1, layer_depth):
+        for _i in range(1, layer_depth):
             layers.append(InvertedBottleneck(channels=channels))
         return nn.Sequential(*layers)
+
+    def _make_downsample_layer(self, channels):
+        return nn.Sequential(
+            nn.GroupNorm(num_groups=1, num_channels=channels),
+            nn.Conv2d(channels, channels * 2, kernel_size=2, stride=2),
+        )
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -122,6 +113,7 @@ class ConvNeXt(nn.Module):
         assert x.shape == (batch_size, 768, 8, 8)
         x = self.head(x)
         assert x.shape == (batch_size, 10)
+
         return x
 
 
