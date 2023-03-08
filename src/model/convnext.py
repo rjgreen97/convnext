@@ -3,6 +3,9 @@ import torch.nn as nn
 
 
 class InvertedBottleneck(nn.Module):
+    """
+    Inverted Bottleneck Block: https://arxiv.org/abs/1801.04381
+    """
     def __init__(self, channels):
         super(InvertedBottleneck, self).__init__()
         self.block = nn.Sequential(
