@@ -5,8 +5,9 @@ import torchvision
 import torchvision.transforms as transforms
 from tqdm import tqdm
 
-from models.convnext import ConvNeXt, InvertedBottleneck
-from training.training_config import TrainingConfig
+from src.model.convnext import ConvNeXt
+from src.model.inverted_bottle_neck import InvertedBottleneck
+from src.training.training_config import TrainingConfig
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(torch.cuda.get_device_name())

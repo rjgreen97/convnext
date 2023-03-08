@@ -1,7 +1,13 @@
 # ConvNeXt implimentaion written from scratch in PyTorch
 
+Model parameters and architecture based on the whitepaper `"A ConvNet for the 2020s"` by Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, & Saining Xie at Facebook AI Research (FAIR) together with UC Berkeley.
+
+Link to the paper:
 https://arxiv.org/pdf/2201.03545.pdf
 
+```
+pip install -r requirements.txt
+```
 
 | Pre-Training Config        | ConvNeXt-T/S/B/L/XL |
 |-------------|-------------|
