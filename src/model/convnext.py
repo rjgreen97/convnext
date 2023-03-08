@@ -5,6 +5,19 @@ from src.model.inverted_bottleneck import InvertedBottleneck
 
 
 class ConvNeXt(nn.Module):
+
+    """
+    My ConvNeXt model takes in a list of channels, a list of layer depths, and a number of classes. 
+    The list of channels is used to define the number of feature maps in each layer of the model. The list of
+    layer depths is used to define the number of inverted bottleneck blocks in each layer of the model. The number
+    of classes is used to define the number of output classes to predict for in the final fully connected layer. 
+    The stem of the model is a 4x4 convolution with a stride of 4, followed by a layer normalization.
+    By using a kernel size of 4 and a stride of 4, we effectivly patchify the input image, much like a vision transformer.
+    The downsampling is performed by the injection a 2x2 convolution with a stride of 2 between layers. Finally, the head of 
+    the model consist of global average pooling, followed by flatten, followed by layer normalization into a fully 
+    connected layer with the number of output nodes equal to the number of classes.
+    """
+
     def __init__(
         self, channels=[96, 192, 384, 768], layer_depths=[3, 3, 9, 3], num_classes=10
     ):
