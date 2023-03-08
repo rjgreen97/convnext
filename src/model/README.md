@@ -1,2 +1,2 @@
-# Block designs for a ResNet, a Swin Transformer, and aConvNeXt
+# Block designs for a Swin Transformer, a ResNet, and aConvNeXt
 ![Alt text](/docs/blocks.png "Optional title")
