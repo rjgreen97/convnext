@@ -30,7 +30,6 @@ accuracy and outperforming Swin Transformers on COCO
 detection and ADE20K segmentation, while maintaining the
 simplicity and efficiency of standard ConvNets.
 
-<br />
 
 # ImageNet-1K classification results for ConvNets, vision Transformers, and ConvNeXt
 ![alt text](docs/imagenet-1k.png)
