@@ -74,7 +74,7 @@ class ConvNeXt(nn.Module):
         x = self.layer4(x)
         assert x.shape == (batch_size, 768, 8, 8)
         x = self.head(x)
-        assert x.shape == (batch_size, 10)
+        assert x.shape == (batch_size, 100)
 
         return x
 
