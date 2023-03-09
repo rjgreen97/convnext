@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 from tqdm import tqdm
 
 from src.model.convnext import ConvNeXt
-from src.model.inverted_bottle_neck import InvertedBottleneck
+from src.model.inverted_bottleneck import InvertedBottleneck
 from src.training.training_config import TrainingConfig
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -25,8 +25,8 @@ transforms = transforms.Compose(
         transforms.ToTensor(),
         transforms.Resize((256, 256)),
         transforms.Normalize(
-            mean=(0.49139968, 0.48215841, 0.44653091),
-            std=(0.24703223, 0.24348513, 0.26158784),
+            mean=(0.485, 0.456, 0.406),
+            std=(0.229, 0.224, 0.225),
         ),
         transforms.RandomHorizontalFlip(p=0.5),
         # transforms.RandAugment(2, 5),  # unsupported by PIL
@@ -41,13 +41,13 @@ optimizer = optim.AdamW(
 
 
 def load_data():
-    train_dataset = torchvision.datasets.CIFAR10(
+    train_dataset = torchvision.datasets.CIFAR100(
         root=config.data_root_dir, train=True, download=True, transform=transforms
     )
     train_dataloader = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.batch_size, shuffle=True, num_workers=0
     )
-    test_dataset = torchvision.datasets.CIFAR10(
+    test_dataset = torchvision.datasets.CIFAR100(
         root=config.data_root_dir, train=False, download=True, transform=transforms
     )
     test_dataloader = torch.utils.data.DataLoader(

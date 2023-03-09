@@ -19,7 +19,7 @@ class ConvNeXt(nn.Module):
     """
 
     def __init__(
-        self, channels=[96, 192, 384, 768], layer_depths=[3, 3, 9, 3], num_classes=10
+        self, channels=[96, 192, 384, 768], layer_depths=[3, 3, 9, 3], num_classes=100
     ):
         super(ConvNeXt, self).__init__()
         self.stem = nn.Sequential(

@@ -6,6 +6,6 @@ class TrainingConfig(BaseModel):
     data_root_dir: str = "./data"
     batch_size: int = 512
     learning_rate: float = 0.0005
-    weight_decay: float = 0.0001
+    weight_decay: float = 0.00001
     num_epochs: int = 300
     patience: int = 10
