@@ -39,7 +39,6 @@ optimizer = optim.AdamW(
     model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay
 )
 
-
 def load_data():
     train_dataset = torchvision.datasets.CIFAR100(
         root=config.data_root_dir, train=True, download=True, transform=transforms
