@@ -30,7 +30,7 @@ transforms = transforms.Compose(
         ),
         transforms.RandomHorizontalFlip(p=0.5),
         # transforms.RandAugment(2, 5),  # unsupported by PIL
-        # transforms.RandomErasing(p=0.5, scale=(0.02, 0.33), ratio=(0.3, 3.3)),
+        transforms.RandomErasing(p=0.5, scale=(0.02, 0.33), ratio=(0.3, 3.3)),
     ]
 )
 
